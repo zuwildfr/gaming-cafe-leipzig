@@ -53,7 +53,9 @@ on conflict (id) do nothing;
 In Vercel → Project → **Settings** → **Environment Variables**:
 
 - `SUPABASE_URL` = deine Supabase Projekt-URL (z. B. `https://xyz.supabase.co`)
+  - Fallback im Code: `NEXT_PUBLIC_SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY` = dein Service Role Key aus Supabase
+  - Fallback im Code: `SUPABASE_SECRET_KEY` oder `SUPABASE_SERVICE_KEY`
 
 Wichtig:
 - **Service Role Key nur in Vercel Env**, nie im Frontend/Code anzeigen.
@@ -81,9 +83,10 @@ Dann kommt von `/api/...` wahrscheinlich HTML statt JSON zurück.
 Bitte prüfen:
 1. Ist das Projekt wirklich in Vercel deployed?
 2. Sind die `api/*.js` Dateien im GitHub Repo?
-3. Sind `SUPABASE_URL` und `SUPABASE_SERVICE_ROLE_KEY` in Vercel gesetzt?
-4. Gibt es in Supabase die Tabelle `public.app_state`?
-5. Nach Änderungen wirklich neu deployed?
+3. Sind `SUPABASE_URL` (oder `NEXT_PUBLIC_SUPABASE_URL`) und `SUPABASE_SERVICE_ROLE_KEY` gesetzt?
+4. Öffne direkt `https://DEINE-DOMAIN/api/state` und prüfe die JSON-Fehlermeldung.
+5. Gibt es in Supabase die Tabelle `public.app_state`?
+6. Nach Änderungen wirklich neu deployed?
 
 ---
 
