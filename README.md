@@ -1,73 +1,91 @@
 # gaming-cafe-leipzig
 
 ## Ziel
-Diese Website soll komplett über **GitHub + Vercel** laufen (ohne lokale Installation).
+Diese Website läuft über **GitHub + Vercel + Supabase** (ohne lokale Installation).
 
 ---
 
-## Schritt-für-Schritt (einfach)
+## Super einfache Schritt-für-Schritt Anleitung
 
-### 1) Projekt zu GitHub pushen
-- Öffne dein GitHub-Repo.
-- Lade alle Dateien hoch (inkl. Ordner `api/`).
-
-Wichtig: Die API-Dateien müssen im Repo sein:
-- `api/state.js`
-- `api/vote.js`
-- `api/suggest.js`
-- `api/reset.js`
-
----
-
-### 2) Projekt bei Vercel importieren
-- Gehe auf [vercel.com](https://vercel.com)
-- **New Project** klicken
-- Dein GitHub-Repo auswählen
-- **Deploy** klicken
-
-Du musst hier kein Build-Command setzen. Vercel erkennt `index.html` + `api/*` automatisch.
+### 1) Code in GitHub
+Stelle sicher, dass diese Dateien im Repo sind:
+- `index.html`
+- Ordner `api/` mit:
+  - `api/state.js`
+  - `api/vote.js`
+  - `api/suggest.js`
+  - `api/reset.js`
+  - `api/_store.js`
 
 ---
 
-### 3) Datenbank/KV in Vercel anlegen (wichtig)
-Damit Votes und Vorschläge von Handy und PC gleich sind, brauchst du zentralen Speicher:
-
-- In Vercel: **Storage** → **Create Database** → **KV**
-- KV mit deinem Projekt verbinden
-
-Danach setzt Vercel automatisch diese Umgebungsvariablen:
-- `KV_REST_API_URL`
-- `KV_REST_API_TOKEN`
-
-Ohne KV funktionieren die API-Routen nicht dauerhaft.
+### 2) Vercel Projekt erstellen
+1. Auf [vercel.com](https://vercel.com) gehen
+2. **New Project**
+3. GitHub-Repo auswählen
+4. **Deploy** klicken
 
 ---
 
-### 4) Neu deployen
-- Nach dem KV-Verbinden: **Redeploy** ausführen.
+### 3) Supabase Tabelle anlegen
+Da du Supabase schon hast, brauchst du dort nur eine Tabelle für den App-State.
+
+In Supabase SQL Editor ausführen:
+
+```sql
+create table if not exists public.app_state (
+  id bigint primary key,
+  state jsonb not null
+);
+```
+
+Optional einmal initialen Datensatz setzen:
+
+```sql
+insert into public.app_state (id, state)
+values (1, '{"votes":{"yes":0,"no":0},"suggestions":[],"lastVoteTimestamp":null,"limitVersion":1,"votedDeviceIds":{},"suggestedDeviceIds":{}}')
+on conflict (id) do nothing;
+```
 
 ---
 
-### 5) Testen
-- Öffne die Vercel-URL auf dem Handy, vote/sende Vorschlag.
-- Öffne dieselbe URL auf dem PC im Admin-Bereich.
-- Jetzt sollten Votes/Vorschläge sichtbar sein, ohne JSON-Fehler.
+### 4) Env Variablen in Vercel setzen
+In Vercel → Project → **Settings** → **Environment Variables**:
+
+- `SUPABASE_URL` = deine Supabase Projekt-URL (z. B. `https://xyz.supabase.co`)
+- `SUPABASE_SERVICE_ROLE_KEY` = dein Service Role Key aus Supabase
+
+Wichtig:
+- **Service Role Key nur in Vercel Env**, nie im Frontend/Code anzeigen.
 
 ---
 
-## Häufiger Fehler
+### 5) Redeploy
+Nach dem Setzen der Variablen in Vercel:
+- **Redeploy** ausführen.
 
-### `Unexpected token 'T', "The page c"... is not valid JSON`
-Das bedeutet fast immer:
-- Frontend ruft `/api/...` auf,
-- aber es kommt HTML statt JSON zurück (z. B. falsches Deployment oder keine funktionierende API/KV-Konfiguration).
+---
 
-Bitte dann prüfen:
-1. Sind die `api/*.js` Dateien im GitHub-Repo?
-2. Ist KV in Vercel verbunden?
-3. Wurde nach KV-Verbindung neu deployed?
+### 6) Test
+1. Auf Handy die Vercel-URL öffnen und voten/Vorschlag senden.
+2. Auf PC dieselbe URL öffnen, Admin-Bereich öffnen.
+3. Jetzt sollten Votes und Vorschläge von Handy sichtbar sein.
+
+---
+
+## Wenn es nicht funktioniert
+
+### Fehler: `Unexpected token 'T' ... is not valid JSON`
+Dann kommt von `/api/...` wahrscheinlich HTML statt JSON zurück.
+
+Bitte prüfen:
+1. Ist das Projekt wirklich in Vercel deployed?
+2. Sind die `api/*.js` Dateien im GitHub Repo?
+3. Sind `SUPABASE_URL` und `SUPABASE_SERVICE_ROLE_KEY` in Vercel gesetzt?
+4. Gibt es in Supabase die Tabelle `public.app_state`?
+5. Nach Änderungen wirklich neu deployed?
 
 ---
 
 ## Hinweis
-`server.js` ist für lokalen Betrieb. Für deinen Wunschfall (**nur GitHub + Vercel**) sind die `api/*.js`-Dateien entscheidend.
+`server.js` ist nur für lokalen Betrieb. Für deinen gewünschten Weg sind `index.html` + `api/*` + Supabase relevant.
