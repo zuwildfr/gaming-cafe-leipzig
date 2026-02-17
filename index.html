@@ -169,6 +169,12 @@
             <p id="adminVoteTimestamp">Letzte Stimme: -</p>
             <p><strong>Vorschläge</strong></p>
             <ul id="adminSuggestions"></ul>
+
+            <label style="display:block; margin-top:12px;">
+                <input type="checkbox" id="adminTestModeToggle" onchange="toggleAdminTestMode()">
+                Testmodus (Admin kann mehrfach voten & vorschlagen)
+            </label>
+            <button onclick="resetAllData()">Votes & Vorschläge zurücksetzen</button>
         </div>
     </div>
 
@@ -182,11 +188,6 @@
 
 <script>
 const ADMIN_PASSWORD = "Nopeman11!";
-const votes = JSON.parse(localStorage.getItem("votes")) || { yes: 0, no: 0 };
-const suggestions = JSON.parse(localStorage.getItem("suggestions")) || [];
-
-const hasVoted = localStorage.getItem("hasVoted") === "true";
-const hasSuggested = localStorage.getItem("hasSuggested") === "true";
 let adminRefreshTimer = null;
 
 applyDeviceLimits();
@@ -200,6 +201,9 @@ function applyDeviceLimits() {
     const suggestionBtn = document.getElementById("suggestionBtn");
     const suggestionLimitMsg = document.getElementById("suggestionLimitMsg");
 
+    const hasVoted = localStorage.getItem("hasVoted") === "true";
+    const hasSuggested = localStorage.getItem("hasSuggested") === "true";
+
     if (hasVoted) {
         voteYesBtn.disabled = true;
         voteNoBtn.disabled = true;
@@ -209,8 +213,12 @@ function applyDeviceLimits() {
     if (hasSuggested) {
         suggestionInput.disabled = true;
         suggestionBtn.disabled = true;
-        suggestionLimitMsg.style.display = "block";
+        suggestionLimitMsg.style.display = canBypassLimits() ? "none" : "block";
     }
+}
+
+function canBypassLimits() {
+    return isAdminUnlocked() && sessionStorage.getItem("adminTestMode") === "true";
 }
 
 function submitGame() {
@@ -220,8 +228,8 @@ function submitGame() {
     const suggestionBtn = document.getElementById("suggestionBtn");
     const value = input.value.trim();
 
-    if (localStorage.getItem("hasSuggested") === "true") {
-        suggestionLimitMsg.style.display = "block";
+    if (localStorage.getItem("hasSuggested") === "true" && !canBypassLimits()) {
+        suggestionLimitMsg.style.display = canBypassLimits() ? "none" : "block";
         return;
     }
 
@@ -230,15 +238,21 @@ function submitGame() {
         return;
     }
 
-    suggestions.push(value);
-    localStorage.setItem("suggestions", JSON.stringify(suggestions));
-    localStorage.setItem("hasSuggested", "true");
+    const storedSuggestions = JSON.parse(localStorage.getItem("suggestions")) || [];
+    storedSuggestions.push(value);
+    localStorage.setItem("suggestions", JSON.stringify(storedSuggestions));
+    if (!canBypassLimits()) {
+        localStorage.setItem("hasSuggested", "true");
+    }
 
     success.style.display = "block";
-    suggestionLimitMsg.style.display = "block";
+    suggestionLimitMsg.style.display = canBypassLimits() ? "none" : "block";
     input.value = "";
-    input.disabled = true;
-    suggestionBtn.disabled = true;
+
+    if (!canBypassLimits()) {
+        input.disabled = true;
+        suggestionBtn.disabled = true;
+    }
 
     if (isAdminUnlocked()) {
         renderAdminData();
@@ -253,22 +267,28 @@ function vote(type) {
     const voteYesBtn = document.getElementById("voteYesBtn");
     const voteNoBtn = document.getElementById("voteNoBtn");
 
-    if (localStorage.getItem("hasVoted") === "true") {
+    if (localStorage.getItem("hasVoted") === "true" && !canBypassLimits()) {
         voteLimitMsg.style.display = "block";
         return;
     }
 
-    votes[type] += 1;
-    localStorage.setItem("votes", JSON.stringify(votes));
-    localStorage.setItem("hasVoted", "true");
+    const currentVotes = JSON.parse(localStorage.getItem("votes")) || { yes: 0, no: 0 };
+    currentVotes[type] += 1;
+    localStorage.setItem("votes", JSON.stringify(currentVotes));
+    if (!canBypassLimits()) {
+        localStorage.setItem("hasVoted", "true");
+    }
 
     const voteTimeIso = new Date().toISOString();
     localStorage.setItem("lastVoteTimestamp", voteTimeIso);
 
     voteSuccess.style.display = "block";
-    voteLimitMsg.style.display = "block";
-    voteYesBtn.disabled = true;
-    voteNoBtn.disabled = true;
+    voteLimitMsg.style.display = canBypassLimits() ? "none" : "block";
+
+    if (!canBypassLimits()) {
+        voteYesBtn.disabled = true;
+        voteNoBtn.disabled = true;
+    }
 
     if (isAdminUnlocked()) {
         renderAdminData();
@@ -290,6 +310,7 @@ function openAdminPanel() {
     hideAdminLoginControls();
     renderAdminData();
     panel.style.display = "block";
+    initializeAdminControls();
     startAdminLiveRefresh();
     passwordInput.value = "";
 }
@@ -302,12 +323,57 @@ function restoreAdminSession() {
     hideAdminLoginControls();
     document.getElementById("adminPanel").style.display = "block";
     renderAdminData();
+    initializeAdminControls();
     startAdminLiveRefresh();
 }
 
 function hideAdminLoginControls() {
     document.getElementById("adminControls").style.display = "none";
 }
+
+function initializeAdminControls() {
+    const testModeToggle = document.getElementById("adminTestModeToggle");
+    testModeToggle.checked = sessionStorage.getItem("adminTestMode") === "true";
+}
+
+function toggleAdminTestMode() {
+    const testModeToggle = document.getElementById("adminTestModeToggle");
+    sessionStorage.setItem("adminTestMode", testModeToggle.checked ? "true" : "false");
+
+    if (testModeToggle.checked) {
+        document.getElementById("voteYesBtn").disabled = false;
+        document.getElementById("voteNoBtn").disabled = false;
+        document.getElementById("gameInput").disabled = false;
+        document.getElementById("suggestionBtn").disabled = false;
+        document.getElementById("voteLimitMsg").style.display = "none";
+        document.getElementById("suggestionLimitMsg").style.display = "none";
+        return;
+    }
+
+    applyDeviceLimits();
+}
+
+function resetAllData() {
+    localStorage.removeItem("votes");
+    localStorage.removeItem("suggestions");
+    localStorage.removeItem("hasVoted");
+    localStorage.removeItem("hasSuggested");
+    localStorage.removeItem("lastVoteTimestamp");
+    notifyAdminDataChanged();
+
+    document.getElementById("voteSuccessMsg").style.display = "none";
+    document.getElementById("successMsg").style.display = "none";
+    document.getElementById("voteLimitMsg").style.display = "none";
+    document.getElementById("suggestionLimitMsg").style.display = "none";
+    document.getElementById("gameInput").value = "";
+    document.getElementById("gameInput").disabled = false;
+    document.getElementById("suggestionBtn").disabled = false;
+    document.getElementById("voteYesBtn").disabled = false;
+    document.getElementById("voteNoBtn").disabled = false;
+
+    renderAdminData();
+}
+
 
 function startAdminLiveRefresh() {
     if (adminRefreshTimer !== null) {
