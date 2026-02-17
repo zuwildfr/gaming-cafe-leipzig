@@ -8,53 +8,70 @@ const DEFAULT_STATE = {
   updatedAt: new Date().toISOString(),
 };
 
-function getKvConfig() {
-  const url = process.env.KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN;
+function getSupabaseConfig() {
+  const url = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!url || !token) {
+  if (!url || !serviceRoleKey) {
     throw new Error(
-      "KV ist nicht konfiguriert. Bitte in Vercel ein KV anlegen und Env-Variablen setzen.",
+      "Supabase ist nicht konfiguriert. Setze SUPABASE_URL und SUPABASE_SERVICE_ROLE_KEY in Vercel.",
     );
   }
 
-  return { url: url.replace(/\/$/, ""), token };
+  return {
+    url: url.replace(/\/$/, ""),
+    serviceRoleKey,
+  };
 }
 
-async function kvGet(key) {
-  const { url, token } = getKvConfig();
-  const response = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+function supabaseHeaders(serviceRoleKey) {
+  return {
+    apikey: serviceRoleKey,
+    Authorization: `Bearer ${serviceRoleKey}`,
+    "Content-Type": "application/json",
+  };
+}
+
+async function readStateFromSupabase() {
+  const { url, serviceRoleKey } = getSupabaseConfig();
+  const response = await fetch(
+    `${url}/rest/v1/app_state?id=eq.1&select=state`,
+    { headers: supabaseHeaders(serviceRoleKey) },
+  );
 
   if (!response.ok) {
-    throw new Error("KV-GET fehlgeschlagen.");
+    throw new Error(
+      "Supabase-Read fehlgeschlagen. Prüfe Tabelle app_state und Env-Variablen.",
+    );
   }
 
-  const data = await response.json();
-  return data?.result ?? null;
+  const rows = await response.json();
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return null;
+  }
+
+  return rows[0]?.state ?? null;
 }
 
-async function kvSet(key, value) {
-  const { url, token } = getKvConfig();
-  const encoded = encodeURIComponent(JSON.stringify(value));
-  const response = await fetch(`${url}/set/${encodeURIComponent(key)}/${encoded}`, {
+async function upsertStateToSupabase(state) {
+  const { url, serviceRoleKey } = getSupabaseConfig();
+  const response = await fetch(`${url}/rest/v1/app_state`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      ...supabaseHeaders(serviceRoleKey),
+      Prefer: "resolution=merge-duplicates",
+    },
+    body: JSON.stringify([{ id: 1, state }]),
   });
 
   if (!response.ok) {
-    throw new Error("KV-SET fehlgeschlagen.");
+    throw new Error(
+      "Supabase-Write fehlgeschlagen. Prüfe Tabelle app_state und Schreibrechte.",
+    );
   }
 }
 
-async function readState() {
-  const state = await kvGet("gaming-cafe-state");
-  if (!state || typeof state !== "object") {
-    await kvSet("gaming-cafe-state", DEFAULT_STATE);
-    return { ...DEFAULT_STATE };
-  }
-
+function normalizeState(state) {
   return {
     ...DEFAULT_STATE,
     ...state,
@@ -74,13 +91,23 @@ async function readState() {
   };
 }
 
+async function readState() {
+  const state = await readStateFromSupabase();
+  if (!state || typeof state !== "object") {
+    await upsertStateToSupabase(DEFAULT_STATE);
+    return { ...DEFAULT_STATE };
+  }
+
+  return normalizeState(state);
+}
+
 async function writeState(state) {
   const next = {
-    ...state,
+    ...normalizeState(state),
     updatedAt: new Date().toISOString(),
   };
 
-  await kvSet("gaming-cafe-state", next);
+  await upsertStateToSupabase(next);
   return next;
 }
 
