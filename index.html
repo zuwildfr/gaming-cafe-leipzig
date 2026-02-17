@@ -159,14 +159,14 @@
     <div class="section">
         <p>Admin-Bereich</p>
         <div id="adminControls">
-            <input type="password" id="adminPassword" placeholder="Admin-Passwort">
-            <button onclick="openAdminPanel()">Admin-Ansicht öffnen</button>
+            <button id="openAdminBtn" onclick="openAdminPanel()">Admin-Ansicht öffnen</button>
         </div>
 
         <div class="admin-panel" id="adminPanel">
             <p><strong>Voting (privat)</strong></p>
             <p id="adminVotes">Ja: 0 | Nein: 0</p>
             <p id="adminVoteTimestamp">Letzte Stimme: -</p>
+            <p style="font-size:13px; opacity:0.75;">Hinweis: Daten sind aktuell browser-/gerätebasiert gespeichert.</p>
             <p><strong>Vorschläge</strong></p>
             <ul id="adminSuggestions"></ul>
 
@@ -309,21 +309,28 @@ function vote(type) {
 }
 
 function openAdminPanel() {
-    const passwordInput = document.getElementById("adminPassword");
     const panel = document.getElementById("adminPanel");
 
-    if (passwordInput.value !== ADMIN_PASSWORD) {
-        alert("Falsches Passwort.");
-        return;
+    if (!isAdminUnlocked()) {
+        const enteredPassword = window.prompt("Bitte Admin-Passwort eingeben:", "");
+
+        if (enteredPassword === null) {
+            return;
+        }
+
+        if (enteredPassword !== ADMIN_PASSWORD) {
+            alert("Falsches Passwort.");
+            return;
+        }
+
+        sessionStorage.setItem("adminUnlocked", "true");
     }
 
-    sessionStorage.setItem("adminUnlocked", "true");
     hideAdminLoginControls();
     renderAdminData();
     panel.style.display = "block";
     initializeAdminControls();
     startAdminLiveRefresh();
-    passwordInput.value = "";
 }
 
 function restoreAdminSession() {
