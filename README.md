@@ -49,6 +49,15 @@ on conflict (id) do nothing;
 
 ---
 
+Wenn du **nicht** mit Service-Role-Key arbeiten willst, brauchst du RLS-Policies. Mit Service-Role-Key ist das nicht nötig.
+
+Empfohlen für dieses Projekt (Server-Only Key in Vercel):
+```sql
+alter table public.app_state disable row level security;
+```
+
+---
+
 ### 4) Env Variablen in Vercel setzen
 In Vercel → Project → **Settings** → **Environment Variables**:
 
@@ -84,9 +93,10 @@ Bitte prüfen:
 1. Ist das Projekt wirklich in Vercel deployed?
 2. Sind die `api/*.js` Dateien im GitHub Repo?
 3. Sind `SUPABASE_URL` (oder `NEXT_PUBLIC_SUPABASE_URL`) und `SUPABASE_SERVICE_ROLE_KEY` gesetzt?
-4. Öffne direkt `https://DEINE-DOMAIN/api/state` und prüfe die JSON-Fehlermeldung.
+4. Öffne direkt `https://DEINE-DOMAIN/api/state` und prüfe die JSON-Fehlermeldung (jetzt inkl. HTTP-Status + Supabase-Antwort).
 5. Gibt es in Supabase die Tabelle `public.app_state`?
-6. Nach Änderungen wirklich neu deployed?
+6. Nutzt du wirklich den Service-Role-Key in Vercel?
+7. Nach Änderungen wirklich neu deployed?
 
 ---
 
