@@ -6,133 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: #1f1f1f;
-            padding: 40px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 560px;
-            box-shadow: 0 0 25px rgba(0, 255, 150, 0.2);
-        }
-
-        h1 {
-            margin-bottom: 10px;
-            color: #00ff99;
-        }
-
-        p {
-            opacity: 0.85;
-        }
-
-        .section {
-            margin-top: 28px;
-            padding-top: 22px;
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            border-radius: 8px;
-            border: none;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 12px;
-            border-radius: 8px;
-            border: none;
-            background: #00ff99;
-            color: black;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background: #00cc77;
-        }
-
-        button:disabled {
-            cursor: not-allowed;
-            opacity: 0.6;
-            background: #6e6e6e;
-            color: #ddd;
-        }
-
-        .vote-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 12px;
-        }
-
-        .vote-buttons button {
-            margin-top: 0;
-        }
-
-        .success {
-            margin-top: 15px;
-            color: #00ff99;
-            display: none;
-        }
-
-        .hint {
-            margin-top: 10px;
-            font-size: 14px;
-            opacity: 0.8;
-            display: none;
-        }
-
-        .contact a {
-            color: #00ff99;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .contact a:hover {
-            text-decoration: underline;
-        }
-
-        .admin-panel {
-            display: none;
-            text-align: left;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 14px;
-            margin-top: 12px;
-        }
-
-        .admin-panel ul {
-            margin: 8px 0 0;
-            padding-left: 20px;
-        }
-
-        .admin-panel li {
-            margin-bottom: 6px;
-            opacity: 0.95;
-        }
+        body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #0f0f0f, #1c1c1c); color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; padding: 20px; }
+        .container { background: #1f1f1f; padding: 40px; border-radius: 15px; width: 90%; max-width: 560px; box-shadow: 0 0 25px rgba(0, 255, 150, 0.2); }
+        h1 { margin-bottom: 10px; color: #00ff99; }
+        p { opacity: 0.85; }
+        .section { margin-top: 28px; padding-top: 22px; border-top: 1px solid rgba(255, 255, 255, 0.12); }
+        input { width: 100%; padding: 12px; margin-top: 15px; border-radius: 8px; border: none; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin-top: 12px; border-radius: 8px; border: none; background: #00ff99; color: black; font-weight: bold; cursor: pointer; font-size: 16px; }
+        button:hover { background: #00cc77; }
+        button:disabled { cursor: not-allowed; opacity: 0.6; background: #6e6e6e; color: #ddd; }
+        .vote-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .vote-buttons button { margin-top: 0; }
+        .success { margin-top: 15px; color: #00ff99; display: none; }
+        .hint { margin-top: 10px; font-size: 14px; opacity: 0.8; display: none; }
+        .contact a { color: #00ff99; text-decoration: none; font-weight: bold; }
+        .contact a:hover { text-decoration: underline; }
+        .admin-panel { display: none; text-align: left; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 14px; margin-top: 12px; }
+        .admin-panel ul { margin: 8px 0 0; padding-left: 20px; }
+        .admin-panel li { margin-bottom: 6px; opacity: 0.95; }
     </style>
 </head>
-
 <body>
 <div class="container">
     <h1>Gaming Café Leipzig</h1>
@@ -166,10 +59,9 @@
             <p><strong>Voting (privat)</strong></p>
             <p id="adminVotes">Ja: 0 | Nein: 0</p>
             <p id="adminVoteTimestamp">Letzte Stimme: -</p>
-            <p style="font-size:13px; opacity:0.75;">Hinweis: Daten sind aktuell browser-/gerätebasiert gespeichert.</p>
+            <p style="font-size:13px; opacity:0.75;">Hinweis: Votes und Vorschläge sind jetzt zentral auf dem Server gespeichert.</p>
             <p><strong>Vorschläge</strong></p>
             <ul id="adminSuggestions"></ul>
-
             <label style="display:block; margin-top:12px;">
                 <input type="checkbox" id="adminTestModeToggle" onchange="toggleAdminTestMode()">
                 Testmodus (Admin kann mehrfach voten & vorschlagen)
@@ -188,11 +80,35 @@
 
 <script>
 const ADMIN_PASSWORD = "Nopeman11!";
-const DEVICE_LIMIT_VERSION = "2";
 let adminRefreshTimer = null;
+let latestState = { votes: { yes: 0, no: 0 }, suggestions: [], lastVoteTimestamp: null, limitVersion: 1 };
 
-applyDeviceLimits();
-restoreAdminSession();
+ensureDeviceId();
+initialize();
+
+async function initialize() {
+    await refreshState();
+    applyDeviceLimits();
+    restoreAdminSession();
+}
+
+function ensureDeviceId() {
+    if (!localStorage.getItem("deviceId")) {
+        localStorage.setItem("deviceId", crypto.randomUUID());
+    }
+}
+
+function getDeviceId() {
+    return localStorage.getItem("deviceId");
+}
+
+function getLocalLimitVersion() {
+    return Number(localStorage.getItem("limitVersion") || 0);
+}
+
+function setLocalLimitVersion(version) {
+    localStorage.setItem("limitVersion", String(version));
+}
 
 function applyDeviceLimits() {
     const voteYesBtn = document.getElementById("voteYesBtn");
@@ -202,19 +118,27 @@ function applyDeviceLimits() {
     const suggestionBtn = document.getElementById("suggestionBtn");
     const suggestionLimitMsg = document.getElementById("suggestionLimitMsg");
 
-    const hasVoted = localStorage.getItem("hasVoted") === "true" && localStorage.getItem("voteLimitVersion") === DEVICE_LIMIT_VERSION;
-    const hasSuggested = localStorage.getItem("hasSuggested") === "true" && localStorage.getItem("suggestionLimitVersion") === DEVICE_LIMIT_VERSION;
+    const hasVoted = localStorage.getItem("hasVoted") === "true" && getLocalLimitVersion() === latestState.limitVersion;
+    const hasSuggested = localStorage.getItem("hasSuggested") === "true" && getLocalLimitVersion() === latestState.limitVersion;
 
-    if (hasVoted) {
+    if (hasVoted && !canBypassLimits()) {
         voteYesBtn.disabled = true;
         voteNoBtn.disabled = true;
         voteLimitMsg.style.display = "block";
+    } else {
+        voteYesBtn.disabled = false;
+        voteNoBtn.disabled = false;
+        voteLimitMsg.style.display = "none";
     }
 
-    if (hasSuggested) {
+    if (hasSuggested && !canBypassLimits()) {
         suggestionInput.disabled = true;
         suggestionBtn.disabled = true;
-        suggestionLimitMsg.style.display = canBypassLimits() ? "none" : "block";
+        suggestionLimitMsg.style.display = "block";
+    } else {
+        suggestionInput.disabled = false;
+        suggestionBtn.disabled = false;
+        suggestionLimitMsg.style.display = "none";
     }
 }
 
@@ -222,126 +146,101 @@ function canBypassLimits() {
     return isAdminUnlocked() && sessionStorage.getItem("adminTestMode") === "true";
 }
 
-function submitGame() {
+async function api(path, options = {}) {
+    const response = await fetch(path, {
+        method: options.method || "GET",
+        headers: { "Content-Type": "application/json" },
+        body: options.body ? JSON.stringify(options.body) : undefined,
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || "Fehler bei der Anfrage");
+    }
+    return data;
+}
+
+async function refreshState() {
+    latestState = await api("/api/state");
+    if (getLocalLimitVersion() !== latestState.limitVersion) {
+        localStorage.removeItem("hasVoted");
+        localStorage.removeItem("hasSuggested");
+        setLocalLimitVersion(latestState.limitVersion);
+    }
+    if (isAdminUnlocked()) {
+        renderAdminData();
+    }
+}
+
+async function submitGame() {
     const input = document.getElementById("gameInput");
     const success = document.getElementById("successMsg");
-    const suggestionLimitMsg = document.getElementById("suggestionLimitMsg");
-    const suggestionBtn = document.getElementById("suggestionBtn");
     const value = input.value.trim();
 
-    if (
-        localStorage.getItem("hasSuggested") === "true" &&
-        localStorage.getItem("suggestionLimitVersion") === DEVICE_LIMIT_VERSION &&
-        !canBypassLimits()
-    ) {
-        suggestionLimitMsg.style.display = canBypassLimits() ? "none" : "block";
-        return;
-    }
-
-    if (value === "") {
+    if (!value) {
         alert("Bitte gib ein Spiel ein.");
         return;
     }
 
-    const storedSuggestions = JSON.parse(localStorage.getItem("suggestions")) || [];
-    storedSuggestions.push(value);
-    localStorage.setItem("suggestions", JSON.stringify(storedSuggestions));
-    if (!canBypassLimits()) {
+    try {
+        await api("/api/suggest", {
+            method: "POST",
+            body: { suggestion: value, deviceId: getDeviceId(), force: canBypassLimits() }
+        });
         localStorage.setItem("hasSuggested", "true");
-        localStorage.setItem("suggestionLimitVersion", DEVICE_LIMIT_VERSION);
+        setLocalLimitVersion(latestState.limitVersion);
+        input.value = "";
+        success.style.display = "block";
+        await refreshState();
+        applyDeviceLimits();
+    } catch (error) {
+        document.getElementById("suggestionLimitMsg").style.display = "block";
+        alert(error.message);
     }
-
-    success.style.display = "block";
-    suggestionLimitMsg.style.display = canBypassLimits() ? "none" : "block";
-    input.value = "";
-
-    if (!canBypassLimits()) {
-        input.disabled = true;
-        suggestionBtn.disabled = true;
-    }
-
-    if (isAdminUnlocked()) {
-        renderAdminData();
-    }
-
-    notifyAdminDataChanged();
 }
 
-function vote(type) {
+async function vote(type) {
     const voteSuccess = document.getElementById("voteSuccessMsg");
-    const voteLimitMsg = document.getElementById("voteLimitMsg");
-    const voteYesBtn = document.getElementById("voteYesBtn");
-    const voteNoBtn = document.getElementById("voteNoBtn");
 
-    if (
-        localStorage.getItem("hasVoted") === "true" &&
-        localStorage.getItem("voteLimitVersion") === DEVICE_LIMIT_VERSION &&
-        !canBypassLimits()
-    ) {
-        voteLimitMsg.style.display = "block";
-        return;
-    }
-
-    const currentVotes = JSON.parse(localStorage.getItem("votes")) || { yes: 0, no: 0 };
-    currentVotes[type] += 1;
-    localStorage.setItem("votes", JSON.stringify(currentVotes));
-    if (!canBypassLimits()) {
+    try {
+        await api("/api/vote", {
+            method: "POST",
+            body: { type, deviceId: getDeviceId(), force: canBypassLimits() }
+        });
         localStorage.setItem("hasVoted", "true");
-        localStorage.setItem("voteLimitVersion", DEVICE_LIMIT_VERSION);
+        setLocalLimitVersion(latestState.limitVersion);
+        voteSuccess.style.display = "block";
+        await refreshState();
+        applyDeviceLimits();
+    } catch (error) {
+        document.getElementById("voteLimitMsg").style.display = "block";
+        alert(error.message);
     }
-
-    const voteTimeIso = new Date().toISOString();
-    localStorage.setItem("lastVoteTimestamp", voteTimeIso);
-
-    voteSuccess.style.display = "block";
-    voteLimitMsg.style.display = canBypassLimits() ? "none" : "block";
-
-    if (!canBypassLimits()) {
-        voteYesBtn.disabled = true;
-        voteNoBtn.disabled = true;
-    }
-
-    if (isAdminUnlocked()) {
-        renderAdminData();
-    }
-
-    notifyAdminDataChanged();
 }
 
 function openAdminPanel() {
-    const panel = document.getElementById("adminPanel");
-
     if (!isAdminUnlocked()) {
         const enteredPassword = window.prompt("Bitte Admin-Passwort eingeben:", "");
-
-        if (enteredPassword === null) {
-            return;
-        }
-
+        if (enteredPassword === null) return;
         if (enteredPassword !== ADMIN_PASSWORD) {
             alert("Falsches Passwort.");
             return;
         }
-
         sessionStorage.setItem("adminUnlocked", "true");
     }
 
     hideAdminLoginControls();
-    renderAdminData();
-    panel.style.display = "block";
+    document.getElementById("adminPanel").style.display = "block";
     initializeAdminControls();
+    renderAdminData();
     startAdminLiveRefresh();
 }
 
 function restoreAdminSession() {
-    if (!isAdminUnlocked()) {
-        return;
-    }
-
+    if (!isAdminUnlocked()) return;
     hideAdminLoginControls();
     document.getElementById("adminPanel").style.display = "block";
-    renderAdminData();
     initializeAdminControls();
+    renderAdminData();
     startAdminLiveRefresh();
 }
 
@@ -350,65 +249,40 @@ function hideAdminLoginControls() {
 }
 
 function initializeAdminControls() {
-    const testModeToggle = document.getElementById("adminTestModeToggle");
-    testModeToggle.checked = sessionStorage.getItem("adminTestMode") === "true";
+    document.getElementById("adminTestModeToggle").checked = sessionStorage.getItem("adminTestMode") === "true";
 }
 
 function toggleAdminTestMode() {
-    const testModeToggle = document.getElementById("adminTestModeToggle");
-    sessionStorage.setItem("adminTestMode", testModeToggle.checked ? "true" : "false");
-
-    if (testModeToggle.checked) {
-        document.getElementById("voteYesBtn").disabled = false;
-        document.getElementById("voteNoBtn").disabled = false;
-        document.getElementById("gameInput").disabled = false;
-        document.getElementById("suggestionBtn").disabled = false;
-        document.getElementById("voteLimitMsg").style.display = "none";
-        document.getElementById("suggestionLimitMsg").style.display = "none";
-        return;
-    }
-
+    const checked = document.getElementById("adminTestModeToggle").checked;
+    sessionStorage.setItem("adminTestMode", checked ? "true" : "false");
     applyDeviceLimits();
 }
 
-function resetAllData() {
-    localStorage.removeItem("votes");
-    localStorage.removeItem("suggestions");
-    localStorage.removeItem("hasVoted");
-    localStorage.removeItem("hasSuggested");
-    localStorage.removeItem("voteLimitVersion");
-    localStorage.removeItem("suggestionLimitVersion");
-    localStorage.removeItem("lastVoteTimestamp");
-    notifyAdminDataChanged();
-
-    document.getElementById("voteSuccessMsg").style.display = "none";
-    document.getElementById("successMsg").style.display = "none";
-    document.getElementById("voteLimitMsg").style.display = "none";
-    document.getElementById("suggestionLimitMsg").style.display = "none";
-    document.getElementById("gameInput").value = "";
-    document.getElementById("gameInput").disabled = false;
-    document.getElementById("suggestionBtn").disabled = false;
-    document.getElementById("voteYesBtn").disabled = false;
-    document.getElementById("voteNoBtn").disabled = false;
-
-    renderAdminData();
+async function resetAllData() {
+    try {
+        await api("/api/reset", { method: "POST", body: { password: ADMIN_PASSWORD } });
+        localStorage.removeItem("hasVoted");
+        localStorage.removeItem("hasSuggested");
+        await refreshState();
+        document.getElementById("voteSuccessMsg").style.display = "none";
+        document.getElementById("successMsg").style.display = "none";
+        document.getElementById("gameInput").value = "";
+        applyDeviceLimits();
+    } catch (error) {
+        alert(error.message);
+    }
 }
-
 
 function startAdminLiveRefresh() {
-    if (adminRefreshTimer !== null) {
-        return;
-    }
-
-    adminRefreshTimer = setInterval(() => {
-        if (isAdminUnlocked()) {
-            renderAdminData();
+    if (adminRefreshTimer !== null) return;
+    adminRefreshTimer = setInterval(async () => {
+        try {
+            await refreshState();
+            applyDeviceLimits();
+        } catch {
+            // ignore temporary connection issues
         }
     }, 1000);
-}
-
-function notifyAdminDataChanged() {
-    localStorage.setItem("adminDataUpdatedAt", String(Date.now()));
 }
 
 function isAdminUnlocked() {
@@ -416,48 +290,29 @@ function isAdminUnlocked() {
 }
 
 function renderAdminData() {
-    const adminVotes = document.getElementById("adminVotes");
-    const adminVoteTimestamp = document.getElementById("adminVoteTimestamp");
+    document.getElementById("adminVotes").textContent = `Ja: ${latestState.votes.yes} | Nein: ${latestState.votes.no}`;
+    document.getElementById("adminVoteTimestamp").textContent = `Letzte Stimme: ${formatTimestamp(latestState.lastVoteTimestamp)}`;
+
     const adminSuggestions = document.getElementById("adminSuggestions");
-
-    const storedVotes = JSON.parse(localStorage.getItem("votes")) || { yes: 0, no: 0 };
-    const storedSuggestions = JSON.parse(localStorage.getItem("suggestions")) || [];
-    const lastVoteTimestamp = localStorage.getItem("lastVoteTimestamp");
-
-    adminVotes.textContent = `Ja: ${storedVotes.yes} | Nein: ${storedVotes.no}`;
-    adminVoteTimestamp.textContent = `Letzte Stimme: ${formatTimestamp(lastVoteTimestamp)}`;
     adminSuggestions.innerHTML = "";
-
-    if (storedSuggestions.length === 0) {
+    if (latestState.suggestions.length === 0) {
         const li = document.createElement("li");
         li.textContent = "Noch keine Vorschläge vorhanden.";
         adminSuggestions.appendChild(li);
         return;
     }
 
-    storedSuggestions.forEach((suggestion) => {
+    latestState.suggestions.forEach((suggestion) => {
         const li = document.createElement("li");
-        li.textContent = suggestion;
+        li.textContent = suggestion.text;
         adminSuggestions.appendChild(li);
     });
 }
 
 function formatTimestamp(value) {
-    if (!value) {
-        return "-";
-    }
-
-    return new Date(value).toLocaleString("de-DE", {
-        dateStyle: "short",
-        timeStyle: "medium"
-    });
+    if (!value) return "-";
+    return new Date(value).toLocaleString("de-DE", { dateStyle: "short", timeStyle: "medium" });
 }
-
-window.addEventListener("storage", () => {
-    if (isAdminUnlocked()) {
-        renderAdminData();
-    }
-});
 </script>
 </body>
 </html>
