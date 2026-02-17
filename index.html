@@ -5,6 +5,7 @@
     <title>Gaming Café Leipzig</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+
     <style>
         body {
             margin: 0;
@@ -15,7 +16,9 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            min-height: 100vh;
             text-align: center;
+            padding: 20px;
         }
 
         .container {
@@ -24,6 +27,7 @@
             border-radius: 15px;
             width: 90%;
             max-width: 500px;
+            max-width: 560px;
             box-shadow: 0 0 25px rgba(0, 255, 150, 0.2);
         }
 
@@ -34,21 +38,31 @@
 
         p {
             opacity: 0.8;
+            opacity: 0.85;
+        }
+
+        .section {
+            margin-top: 28px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         input {
             width: 100%;
             padding: 12px;
             margin-top: 20px;
+            margin-top: 15px;
             border-radius: 8px;
             border: none;
             font-size: 16px;
+            box-sizing: border-box;
         }
 
         button {
             width: 100%;
             padding: 12px;
             margin-top: 15px;
+            margin-top: 12px;
             border-radius: 8px;
             border: none;
             background: #00ff99;
@@ -62,10 +76,37 @@
             background: #00cc77;
         }
 
+        .vote-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .vote-buttons button {
+            margin-top: 0;
+        }
+
         .success {
             margin-top: 15px;
             color: #00ff99;
             display: none;
+        }
+
+        .vote-result {
+            margin-top: 14px;
+            font-size: 15px;
+            opacity: 0.95;
+        }
+
+        .contact a {
+            color: #00ff99;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -75,16 +116,44 @@
 <div class="container">
     <h1>Gaming Café Leipzig</h1>
     <p>Welche Games sollen wir anbieten?</p>
+    <p>Hilf uns, das Gaming Café in Leipzig aufzubauen 🚀</p>
+
+    <div class="section">
+        <p>Welche Games sollen wir anbieten?</p>
+        <input type="text" id="gameInput" placeholder="Dein Game-Vorschlag...">
+        <button onclick="submitGame()">Vorschlag absenden</button>
 
     <input type="text" id="gameInput" placeholder="Dein Game-Vorschlag...">
     <button onclick="submitGame()">Vorschlag absenden</button>
+        <div class="success" id="successMsg">
+            Danke für deinen Vorschlag!
+        </div>
+    </div>
+
+    <div class="section">
+        <p>Soll es in Leipzig ein Gaming Café geben?</p>
+        <div class="vote-buttons">
+            <button onclick="vote('yes')">Ja 🎮</button>
+            <button onclick="vote('no')">Nein</button>
+        </div>
+        <div class="vote-result" id="voteResult">
+            Stimmen: Ja 0 | Nein 0
+        </div>
+    </div>
 
     <div class="success" id="successMsg">
         Danke für deinen Vorschlag!
+    <div class="section contact">
+        <p>
+            Für Unterstützung, Sponsoring oder Spenden erreichst du mich unter:<br>
+            <a href="mailto:n.b.27.09.2005@gmail.com">n.b.27.09.2005@gmail.com</a>
+        </p>
     </div>
 </div>
 
 <script>
+let votes = { yes: 0, no: 0 };
+
 function submitGame() {
     const input = document.getElementById("gameInput");
     const success = document.getElementById("successMsg");
@@ -97,6 +166,11 @@ function submitGame() {
     // Aktuell nur visuelle Bestätigung
     success.style.display = "block";
     input.value = "";
+}
+
+function vote(type) {
+    votes[type] += 1;
+    document.getElementById("voteResult").textContent = `Stimmen: Ja ${votes.yes} | Nein ${votes.no}`;
 }
 </script>
 
