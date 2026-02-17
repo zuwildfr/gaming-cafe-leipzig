@@ -123,7 +123,7 @@
 
     <input type="text" id="gameInput" placeholder="Dein Game-Vorschlag...">
     <button onclick="submitGame()">Vorschlag absenden</button>
-    <div class="section" id="gameSuggestionSection" data-game-suggestion>
+    <div class="section">
         <p>Welche Games sollen wir anbieten?</p>
         <input type="text" id="gameInput" placeholder="Dein Game-Vorschlag...">
         <button onclick="submitGame()">Vorschlag absenden</button>
@@ -145,17 +145,6 @@
 
 <script>
 const votes = JSON.parse(localStorage.getItem("votes")) || { yes: 0, no: 0 };
-
-ensureSingleGameSuggestionSection();
-
-function ensureSingleGameSuggestionSection() {
-    const sections = document.querySelectorAll("[data-game-suggestion]");
-    sections.forEach((section, index) => {
-        if (index > 0) {
-            section.remove();
-        }
-    });
-}
 
 function submitGame() {
     const input = document.getElementById("gameInput");
