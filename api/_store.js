@@ -1,4 +1,3 @@
-
 const DEFAULT_STATE = {
   votes: { yes: 0, no: 0 },
   suggestions: [],
