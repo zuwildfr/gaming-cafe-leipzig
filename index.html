@@ -158,8 +158,10 @@
 
     <div class="section">
         <p>Admin-Bereich</p>
-        <input type="password" id="adminPassword" placeholder="Admin-Passwort">
-        <button onclick="openAdminPanel()">Admin-Ansicht öffnen</button>
+        <div id="adminControls">
+            <input type="password" id="adminPassword" placeholder="Admin-Passwort">
+            <button onclick="openAdminPanel()">Admin-Ansicht öffnen</button>
+        </div>
 
         <div class="admin-panel" id="adminPanel">
             <p><strong>Voting (privat)</strong></p>
@@ -187,6 +189,7 @@ const hasVoted = localStorage.getItem("hasVoted") === "true";
 const hasSuggested = localStorage.getItem("hasSuggested") === "true";
 
 applyDeviceLimits();
+restoreAdminSession();
 
 function applyDeviceLimits() {
     const voteYesBtn = document.getElementById("voteYesBtn");
@@ -235,6 +238,10 @@ function submitGame() {
     input.value = "";
     input.disabled = true;
     suggestionBtn.disabled = true;
+
+    if (isAdminUnlocked()) {
+        renderAdminData();
+    }
 }
 
 function vote(type) {
@@ -259,6 +266,10 @@ function vote(type) {
     voteLimitMsg.style.display = "block";
     voteYesBtn.disabled = true;
     voteNoBtn.disabled = true;
+
+    if (isAdminUnlocked()) {
+        renderAdminData();
+    }
 }
 
 function openAdminPanel() {
@@ -270,9 +281,29 @@ function openAdminPanel() {
         return;
     }
 
+    sessionStorage.setItem("adminUnlocked", "true");
+    hideAdminLoginControls();
     renderAdminData();
     panel.style.display = "block";
     passwordInput.value = "";
+}
+
+function restoreAdminSession() {
+    if (!isAdminUnlocked()) {
+        return;
+    }
+
+    hideAdminLoginControls();
+    document.getElementById("adminPanel").style.display = "block";
+    renderAdminData();
+}
+
+function hideAdminLoginControls() {
+    document.getElementById("adminControls").style.display = "none";
+}
+
+function isAdminUnlocked() {
+    return sessionStorage.getItem("adminUnlocked") === "true";
 }
 
 function renderAdminData() {
@@ -312,6 +343,12 @@ function formatTimestamp(value) {
         timeStyle: "medium"
     });
 }
+
+window.addEventListener("storage", () => {
+    if (isAdminUnlocked()) {
+        renderAdminData();
+    }
+});
 </script>
 </body>
 </html>
