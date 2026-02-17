@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Gaming Café Leipzig</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background: #1f1f1f;
+            padding: 40px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 25px rgba(0, 255, 150, 0.2);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #00ff99;
+        }
+
+        p {
+            opacity: 0.8;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: none;
+            background: #00ff99;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #00cc77;
+        }
+
+        .success {
+            margin-top: 15px;
+            color: #00ff99;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Gaming Café Leipzig</h1>
+    <p>Welche Games sollen wir anbieten?</p>
+
+    <input type="text" id="gameInput" placeholder="Dein Game-Vorschlag...">
+    <button onclick="submitGame()">Vorschlag absenden</button>
+
+    <div class="success" id="successMsg">
+        Danke für deinen Vorschlag!
+    </div>
+</div>
+
+<script>
+function submitGame() {
+    const input = document.getElementById("gameInput");
+    const success = document.getElementById("successMsg");
+
+    if (input.value.trim() === "") {
+        alert("Bitte gib ein Spiel ein.");
+        return;
+    }
+
+    // Aktuell nur visuelle Bestätigung
+    success.style.display = "block";
+    input.value = "";
+}
+</script>
+
+</body>
+</html>
