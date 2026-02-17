@@ -187,6 +187,7 @@ const suggestions = JSON.parse(localStorage.getItem("suggestions")) || [];
 
 const hasVoted = localStorage.getItem("hasVoted") === "true";
 const hasSuggested = localStorage.getItem("hasSuggested") === "true";
+let adminRefreshTimer = null;
 
 applyDeviceLimits();
 restoreAdminSession();
@@ -242,6 +243,8 @@ function submitGame() {
     if (isAdminUnlocked()) {
         renderAdminData();
     }
+
+    notifyAdminDataChanged();
 }
 
 function vote(type) {
@@ -270,6 +273,8 @@ function vote(type) {
     if (isAdminUnlocked()) {
         renderAdminData();
     }
+
+    notifyAdminDataChanged();
 }
 
 function openAdminPanel() {
@@ -285,6 +290,7 @@ function openAdminPanel() {
     hideAdminLoginControls();
     renderAdminData();
     panel.style.display = "block";
+    startAdminLiveRefresh();
     passwordInput.value = "";
 }
 
@@ -296,10 +302,27 @@ function restoreAdminSession() {
     hideAdminLoginControls();
     document.getElementById("adminPanel").style.display = "block";
     renderAdminData();
+    startAdminLiveRefresh();
 }
 
 function hideAdminLoginControls() {
     document.getElementById("adminControls").style.display = "none";
+}
+
+function startAdminLiveRefresh() {
+    if (adminRefreshTimer !== null) {
+        return;
+    }
+
+    adminRefreshTimer = setInterval(() => {
+        if (isAdminUnlocked()) {
+            renderAdminData();
+        }
+    }, 1000);
+}
+
+function notifyAdminDataChanged() {
+    localStorage.setItem("adminDataUpdatedAt", String(Date.now()));
 }
 
 function isAdminUnlocked() {
