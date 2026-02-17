@@ -188,6 +188,7 @@
 
 <script>
 const ADMIN_PASSWORD = "Nopeman11!";
+const DEVICE_LIMIT_VERSION = "2";
 let adminRefreshTimer = null;
 
 applyDeviceLimits();
@@ -201,8 +202,8 @@ function applyDeviceLimits() {
     const suggestionBtn = document.getElementById("suggestionBtn");
     const suggestionLimitMsg = document.getElementById("suggestionLimitMsg");
 
-    const hasVoted = localStorage.getItem("hasVoted") === "true";
-    const hasSuggested = localStorage.getItem("hasSuggested") === "true";
+    const hasVoted = localStorage.getItem("hasVoted") === "true" && localStorage.getItem("voteLimitVersion") === DEVICE_LIMIT_VERSION;
+    const hasSuggested = localStorage.getItem("hasSuggested") === "true" && localStorage.getItem("suggestionLimitVersion") === DEVICE_LIMIT_VERSION;
 
     if (hasVoted) {
         voteYesBtn.disabled = true;
@@ -228,7 +229,11 @@ function submitGame() {
     const suggestionBtn = document.getElementById("suggestionBtn");
     const value = input.value.trim();
 
-    if (localStorage.getItem("hasSuggested") === "true" && !canBypassLimits()) {
+    if (
+        localStorage.getItem("hasSuggested") === "true" &&
+        localStorage.getItem("suggestionLimitVersion") === DEVICE_LIMIT_VERSION &&
+        !canBypassLimits()
+    ) {
         suggestionLimitMsg.style.display = canBypassLimits() ? "none" : "block";
         return;
     }
@@ -243,6 +248,7 @@ function submitGame() {
     localStorage.setItem("suggestions", JSON.stringify(storedSuggestions));
     if (!canBypassLimits()) {
         localStorage.setItem("hasSuggested", "true");
+        localStorage.setItem("suggestionLimitVersion", DEVICE_LIMIT_VERSION);
     }
 
     success.style.display = "block";
@@ -267,7 +273,11 @@ function vote(type) {
     const voteYesBtn = document.getElementById("voteYesBtn");
     const voteNoBtn = document.getElementById("voteNoBtn");
 
-    if (localStorage.getItem("hasVoted") === "true" && !canBypassLimits()) {
+    if (
+        localStorage.getItem("hasVoted") === "true" &&
+        localStorage.getItem("voteLimitVersion") === DEVICE_LIMIT_VERSION &&
+        !canBypassLimits()
+    ) {
         voteLimitMsg.style.display = "block";
         return;
     }
@@ -277,6 +287,7 @@ function vote(type) {
     localStorage.setItem("votes", JSON.stringify(currentVotes));
     if (!canBypassLimits()) {
         localStorage.setItem("hasVoted", "true");
+        localStorage.setItem("voteLimitVersion", DEVICE_LIMIT_VERSION);
     }
 
     const voteTimeIso = new Date().toISOString();
@@ -358,6 +369,8 @@ function resetAllData() {
     localStorage.removeItem("suggestions");
     localStorage.removeItem("hasVoted");
     localStorage.removeItem("hasSuggested");
+    localStorage.removeItem("voteLimitVersion");
+    localStorage.removeItem("suggestionLimitVersion");
     localStorage.removeItem("lastVoteTimestamp");
     notifyAdminDataChanged();
 
