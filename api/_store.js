@@ -1,3 +1,4 @@
+
 const DEFAULT_STATE = {
   votes: { yes: 0, no: 0 },
   suggestions: [],
@@ -25,12 +26,8 @@ function getSupabaseConfig() {
   );
 
   const missing = [];
-  if (!url) {
-    missing.push("SUPABASE_URL (oder NEXT_PUBLIC_SUPABASE_URL)");
-  }
-  if (!serviceRoleKey) {
-    missing.push("SUPABASE_SERVICE_ROLE_KEY");
-  }
+  if (!url) missing.push("SUPABASE_URL (oder NEXT_PUBLIC_SUPABASE_URL)");
+  if (!serviceRoleKey) missing.push("SUPABASE_SERVICE_ROLE_KEY");
 
   if (missing.length > 0) {
     throw new Error(
@@ -38,10 +35,7 @@ function getSupabaseConfig() {
     );
   }
 
-  return {
-    url: url.replace(/\/$/, ""),
-    serviceRoleKey,
-  };
+  return { url: url.replace(/\/$/, ""), serviceRoleKey };
 }
 
 function supabaseHeaders(serviceRoleKey) {
@@ -52,6 +46,11 @@ function supabaseHeaders(serviceRoleKey) {
   };
 }
 
+function formatSupabaseError(prefix, status, bodyText) {
+  const snippet = (bodyText || "").slice(0, 400);
+  return `${prefix} (HTTP ${status}). Antwort: ${snippet || "leer"}`;
+}
+
 async function readStateFromSupabase() {
   const { url, serviceRoleKey } = getSupabaseConfig();
   const response = await fetch(
@@ -60,8 +59,13 @@ async function readStateFromSupabase() {
   );
 
   if (!response.ok) {
+    const bodyText = await response.text();
     throw new Error(
-      "Supabase-Read fehlgeschlagen. Prüfe Tabelle app_state, API-Zugriff und Env-Variablen.",
+      formatSupabaseError(
+        "Supabase-Read fehlgeschlagen. Prüfe Tabelle app_state, API-Zugriff und Env-Variablen",
+        response.status,
+        bodyText,
+      ),
     );
   }
 
@@ -85,8 +89,13 @@ async function upsertStateToSupabase(state) {
   });
 
   if (!response.ok) {
+    const bodyText = await response.text();
     throw new Error(
-      "Supabase-Write fehlgeschlagen. Prüfe Tabelle app_state und Schreibrechte.",
+      formatSupabaseError(
+        "Supabase-Write fehlgeschlagen. Prüfe Tabelle app_state und Schreibrechte",
+        response.status,
+        bodyText,
+      ),
     );
   }
 }
@@ -136,13 +145,8 @@ function json(res, status, body) {
 }
 
 function parseBody(req) {
-  if (!req.body) {
-    return {};
-  }
-
-  if (typeof req.body === "object") {
-    return req.body;
-  }
+  if (!req.body) return {};
+  if (typeof req.body === "object") return req.body;
 
   try {
     return JSON.parse(req.body);
