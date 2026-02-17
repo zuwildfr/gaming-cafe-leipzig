@@ -8,13 +8,33 @@ const DEFAULT_STATE = {
   updatedAt: new Date().toISOString(),
 };
 
-function getSupabaseConfig() {
-  const url = process.env.SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+function firstDefined(...values) {
+  return values.find((value) => typeof value === "string" && value.trim() !== "");
+}
 
-  if (!url || !serviceRoleKey) {
+function getSupabaseConfig() {
+  const url = firstDefined(
+    process.env.SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+  );
+
+  const serviceRoleKey = firstDefined(
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    process.env.SUPABASE_SECRET_KEY,
+    process.env.SUPABASE_SERVICE_KEY,
+  );
+
+  const missing = [];
+  if (!url) {
+    missing.push("SUPABASE_URL (oder NEXT_PUBLIC_SUPABASE_URL)");
+  }
+  if (!serviceRoleKey) {
+    missing.push("SUPABASE_SERVICE_ROLE_KEY");
+  }
+
+  if (missing.length > 0) {
     throw new Error(
-      "Supabase ist nicht konfiguriert. Setze SUPABASE_URL und SUPABASE_SERVICE_ROLE_KEY in Vercel.",
+      `Supabase ist nicht konfiguriert. Fehlend: ${missing.join(", ")}. In Vercel setzen und neu deployen.`,
     );
   }
 
@@ -41,7 +61,7 @@ async function readStateFromSupabase() {
 
   if (!response.ok) {
     throw new Error(
-      "Supabase-Read fehlgeschlagen. Prüfe Tabelle app_state und Env-Variablen.",
+      "Supabase-Read fehlgeschlagen. Prüfe Tabelle app_state, API-Zugriff und Env-Variablen.",
     );
   }
 
