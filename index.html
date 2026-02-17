@@ -23,13 +23,15 @@
         .contact a:hover { text-decoration: underline; }
         .admin-panel { display: none; text-align: left; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 14px; margin-top: 12px; }
         .admin-panel ul { margin: 8px 0 0; padding-left: 20px; }
-        .admin-panel li { margin-bottom: 6px; opacity: 0.95; }
+         .admin-panel li { margin-bottom: 6px; opacity: 0.95; }
+        .server-warning { display:none; margin-top:14px; padding:10px; border-radius:8px; background:#4a1f1f; color:#ffd4d4; font-size:14px; text-align:left; }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>Gaming Café Leipzig</h1>
     <p>Hilf uns, das Gaming Café in Leipzig aufzubauen 🚀</p>
+    <div id="serverWarning" class="server-warning"></div>
 
     <div class="section">
         <p>Soll es in Leipzig ein Gaming Café geben?</p>
@@ -87,7 +89,13 @@ ensureDeviceId();
 initialize();
 
 async function initialize() {
-    await refreshState();
+    try {
+        await refreshState();
+        hideServerWarning();
+    } catch (error) {
+        showServerWarning(error.message);
+    }
+
     applyDeviceLimits();
     restoreAdminSession();
 }
@@ -152,11 +160,32 @@ async function api(path, options = {}) {
         headers: { "Content-Type": "application/json" },
         body: options.body ? JSON.stringify(options.body) : undefined,
     });
-    const data = await response.json();
+
+    const contentType = response.headers.get("content-type") || "";
+    const isJson = contentType.includes("application/json");
+    const data = isJson ? await response.json() : null;
+
+    if (!isJson) {
+        throw new Error("API nicht erreichbar: Prüfe, ob der Node-Server läuft/deployed ist (nicht nur statisches Hosting).");
+    }
+
     if (!response.ok) {
         throw new Error(data.error || "Fehler bei der Anfrage");
     }
+
     return data;
+}
+
+function showServerWarning(message) {
+    const el = document.getElementById("serverWarning");
+    el.textContent = message;
+    el.style.display = "block";
+}
+
+function hideServerWarning() {
+    const el = document.getElementById("serverWarning");
+    el.style.display = "none";
+    el.textContent = "";
 }
 
 async function refreshState() {
@@ -191,9 +220,11 @@ async function submitGame() {
         input.value = "";
         success.style.display = "block";
         await refreshState();
+        hideServerWarning();
         applyDeviceLimits();
     } catch (error) {
         document.getElementById("suggestionLimitMsg").style.display = "block";
+        showServerWarning(error.message);
         alert(error.message);
     }
 }
@@ -210,9 +241,11 @@ async function vote(type) {
         setLocalLimitVersion(latestState.limitVersion);
         voteSuccess.style.display = "block";
         await refreshState();
+        hideServerWarning();
         applyDeviceLimits();
     } catch (error) {
         document.getElementById("voteLimitMsg").style.display = "block";
+        showServerWarning(error.message);
         alert(error.message);
     }
 }
@@ -264,11 +297,13 @@ async function resetAllData() {
         localStorage.removeItem("hasVoted");
         localStorage.removeItem("hasSuggested");
         await refreshState();
+        hideServerWarning();
         document.getElementById("voteSuccessMsg").style.display = "none";
         document.getElementById("successMsg").style.display = "none";
         document.getElementById("gameInput").value = "";
         applyDeviceLimits();
     } catch (error) {
+        showServerWarning(error.message);
         alert(error.message);
     }
 }
@@ -278,9 +313,10 @@ function startAdminLiveRefresh() {
     adminRefreshTimer = setInterval(async () => {
         try {
             await refreshState();
+            hideServerWarning();
             applyDeviceLimits();
         } catch {
-            // ignore temporary connection issues
+            showServerWarning("Server-Verbindung unterbrochen. Bitte Deployment/Server prüfen.")
         }
     }, 1000);
 }
