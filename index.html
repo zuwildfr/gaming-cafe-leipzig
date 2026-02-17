@@ -25,6 +25,12 @@
         .admin-panel ul { margin: 8px 0 0; padding-left: 20px; }
          .admin-panel li { margin-bottom: 6px; opacity: 0.95; }
         .server-warning { display:none; margin-top:14px; padding:10px; border-radius:8px; background:#4a1f1f; color:#ffd4d4; font-size:14px; text-align:left; }
+        .danger-btn { background: #ff5f5f; color: #1a1a1a; }
+        .danger-btn:hover { background: #e34b4b; }
+        .reset-confirm { display:none; margin-top:10px; padding:10px; border:1px solid rgba(255,95,95,0.45); border-radius:8px; background: rgba(255,95,95,0.08); }
+        .reset-confirm p { margin: 0 0 8px; opacity: 1; color: #ffdede; font-size: 14px; }
+        .reset-confirm-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .reset-confirm-actions button { margin-top:0; }
     </style>
 </head>
 <body>
@@ -68,7 +74,14 @@
                 <input type="checkbox" id="adminTestModeToggle" onchange="toggleAdminTestMode()">
                 Testmodus (Admin kann mehrfach voten & vorschlagen)
             </label>
-            <button onclick="resetAllData()">Votes & Vorschläge zurücksetzen</button>
+            <button id="resetRequestBtn" class="danger-btn" onclick="showResetConfirmation()">Votes & Vorschläge zurücksetzen</button>
+            <div class="reset-confirm" id="resetConfirmBox">
+                <p>Bist du sicher? Das löscht alle Votes und Vorschläge.</p>
+                <div class="reset-confirm-actions">
+                    <button class="danger-btn" onclick="confirmResetAllData()">Ja, endgültig löschen</button>
+                    <button onclick="cancelResetConfirmation()">Abbrechen</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -291,7 +304,15 @@ function toggleAdminTestMode() {
     applyDeviceLimits();
 }
 
-async function resetAllData() {
+function showResetConfirmation() {
+    document.getElementById("resetConfirmBox").style.display = "block";
+}
+
+function cancelResetConfirmation() {
+    document.getElementById("resetConfirmBox").style.display = "none";
+}
+
+async function confirmResetAllData() {
     try {
         await api("/api/reset", { method: "POST", body: { password: ADMIN_PASSWORD } });
         localStorage.removeItem("hasVoted");
@@ -302,6 +323,7 @@ async function resetAllData() {
         document.getElementById("successMsg").style.display = "none";
         document.getElementById("gameInput").value = "";
         applyDeviceLimits();
+        cancelResetConfirmation();
     } catch (error) {
         showServerWarning(error.message);
         alert(error.message);
