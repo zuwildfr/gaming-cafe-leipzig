@@ -1,1 +1,8 @@
 data/
+logs/
+downloads/
+temp/
+output/
+__pycache__/
+*.py[cod]
+.venv/
